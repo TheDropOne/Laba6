@@ -9,21 +9,45 @@ public class Runner {
 
     private static String directoryPath;
     private static String directoryName;
+    private static String fullDirectoryPath;
     private static final String FILENAME = "root.txt";
     private static final String POEM_PATH = "poem.txt";
     private static final String DIR_PATH = "files.txt";
+    private static List<String> poemStrings;
+    private static List<String> dirStrings;
 
     public static void main(String[] args) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File(FILENAME)));
-            List<String> poemStrings = readListOfStrings(POEM_PATH);
-            List<String> dirStrings = readListOfStrings(DIR_PATH);
             directoryPath = br.readLine();
             directoryName = br.readLine();
+            fullDirectoryPath = directoryPath + File.separator + directoryName;
+            poemStrings = readListOfStrings(POEM_PATH);
+            dirStrings = readListOfStrings(DIR_PATH);
 
-            makeFile(directoryPath, "111.txt");
-            System.out.println((new File(directoryPath)).lastModified());
+            File directory = new File(fullDirectoryPath);
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
 
+            for (String path : dirStrings) {
+                String[] arr = path.split("/");
+                String folderToCreateFilePath = directory.getPath();
+                for (int i = 0; i < arr.length - 1; i++) {
+                    folderToCreateFilePath += File.separator + arr[i];
+                    File tempFolder = new File(folderToCreateFilePath);
+                    if (!tempFolder.exists()) {
+                        tempFolder.mkdir();
+                    }
+                }
+                File file = new File(folderToCreateFilePath, arr[arr.length - 1]);
+                if (file.getPath().contains(".")) {
+                    file.createNewFile();
+                    writeTask(file, arr.length - 1);
+                } else {
+                    file.mkdir();
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,12 +65,11 @@ public class Runner {
         return listOfStrings;
     }
 
-    private static void makeDir(String fullpath) {
-        File file = new File(fullpath);
-        file.mkdir();
-    }
-
-    private static void makeFile(String dirpath, String filename) throws IOException {
-        File file = new File(dirpath, filename);
+    private static void writeTask(File file, int index) throws IOException {
+        FileWriter fw = new FileWriter(file);
+        fw.write(file.getAbsolutePath() + System.lineSeparator());
+        fw.write(index + System.lineSeparator());
+        fw.write(poemStrings.get(index - 1));
+        fw.close();
     }
 }
