@@ -1,6 +1,6 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Kuryakov on 29-Oct-16.
@@ -13,8 +13,8 @@ public class Runner {
     private static final String FILENAME = "root.txt";
     private static final String POEM_PATH = "poem.txt";
     private static final String DIR_PATH = "files.txt";
-    private static List<String> poemStrings;
-    private static List<String> dirStrings;
+    private static Set<String> poemStrings;
+    private static Set<String> dirStrings;
 
     public static void main(String[] args) {
         try {
@@ -22,8 +22,8 @@ public class Runner {
             directoryPath = br.readLine();
             directoryName = br.readLine();
             fullDirectoryPath = directoryPath + File.separator + directoryName;
-            poemStrings = readListOfStrings(POEM_PATH);
-            dirStrings = readListOfStrings(DIR_PATH);
+            poemStrings = readSetOfStrings(POEM_PATH);
+            dirStrings = readSetOfStrings(DIR_PATH);
 
             File directory = new File(fullDirectoryPath);
             if (!directory.exists()) {
@@ -53,23 +53,23 @@ public class Runner {
         }
     }
 
-    private static List<String> readListOfStrings(String path) throws IOException {
+    private static Set<String> readSetOfStrings(String path) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(new File(path)));
-        List<String> listOfStrings = new ArrayList<>();
+        Set<String> setOfStrings = new LinkedHashSet<>();
         String tempString = br.readLine();
         while (tempString != null) {
-            listOfStrings.add(tempString);
+            setOfStrings.add(tempString);
             tempString = br.readLine();
         }
         br.close();
-        return listOfStrings;
+        return setOfStrings;
     }
 
     private static void writeTask(File file, int index) throws IOException {
         FileWriter fw = new FileWriter(file);
         fw.write(file.getAbsolutePath() + System.lineSeparator());
         fw.write(index + System.lineSeparator());
-        fw.write(poemStrings.get(index - 1));
+        fw.write((String) poemStrings.toArray()[index - 1]);
         fw.close();
     }
 }
